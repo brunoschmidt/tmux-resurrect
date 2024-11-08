@@ -194,8 +194,12 @@ dump_panes() {
 			if is_session_grouped "$session_name"; then
 				continue
 			fi
-			full_command="$(pane_full_command $pane_pid)"
-			dir=$(echo $dir | sed 's/ /\\ /') # escape all spaces in directory path
+			# not saving panes from other sessions
+			if ! is_session_active "$session_name"; then
+				continue
+			fi
+			full_command="$(pane_full_command "$pane_pid")"
+			dir=$(echo "$dir" | sed 's/ /\\ /') # escape all spaces in directory path
 			echo "${line_type}${d}${session_name}${d}${window_number}${d}${window_active}${d}${window_flags}${d}${pane_index}${d}${pane_title}${d}${dir}${d}${pane_active}${d}${pane_command}${d}:${full_command}"
 		done
 }
@@ -205,6 +209,10 @@ dump_windows() {
 		while IFS=$d read line_type session_name window_index window_name window_active window_flags window_layout; do
 			# not saving windows from grouped sessions
 			if is_session_grouped "$session_name"; then
+				continue
+			fi
+			# not saving windows from other sessions
+			if ! is_session_active "$session_name"; then
 				continue
 			fi
 			automatic_rename="$(tmux show-window-options -vt "${session_name}:${window_index}" automatic-rename)"

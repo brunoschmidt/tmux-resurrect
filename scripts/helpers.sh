@@ -5,6 +5,9 @@ else
 fi
 resurrect_dir_option="@resurrect-dir"
 
+TMUX_SOCKET_NAME="$(basename "$(echo "$TMUX"|cut -f1 -d,)")"
+TMUX_SESSION_NAME="$(tmux display-message -p '#S')"
+
 SUPPORTED_VERSION="1.9"
 RESURRECT_FILE_PREFIX="tmux_resurrect"
 RESURRECT_FILE_EXTENSION="txt"
@@ -78,6 +81,11 @@ is_session_grouped() {
 	[[ "$GROUPED_SESSIONS" == *"${d}${session_name}${d}"* ]]
 }
 
+is_session_active() {
+	local session_name="$1"
+	[[ "$TMUX_SESSION_NAME" == "$session_name" ]]
+}
+
 # pane content file helpers
 
 pane_contents_create_archive() {
@@ -100,7 +108,7 @@ resurrect_dir() {
 	if [ -z "$_RESURRECT_DIR" ]; then
 		local path="$(get_tmux_option "$resurrect_dir_option" "$default_resurrect_dir")"
 		# expands tilde, $HOME and $HOSTNAME if used in @resurrect-dir
-		echo "$path" | sed "s,\$HOME,$HOME,g; s,\$HOSTNAME,$(hostname),g; s,\~,$HOME,g"
+		echo "$path/$TMUX_SOCKET_NAME/$TMUX_SESSION_NAME" | sed "s,\$HOME,$HOME,g; s,\$HOSTNAME,$(hostname),g; s,\~,$HOME,g"
 	else
 		echo "$_RESURRECT_DIR"
 	fi
