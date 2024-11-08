@@ -11,6 +11,7 @@ set_save_bindings() {
 	for key in $key_bindings; do
 		tmux bind-key "$key" run-shell "$CURRENT_DIR/scripts/save.sh"
 	done
+	tmux set-option -as command-alias "resurect-save=run-shell '$CURRENT_DIR/scripts/save.sh'"
 }
 
 set_restore_bindings() {
@@ -19,6 +20,7 @@ set_restore_bindings() {
 	for key in $key_bindings; do
 		tmux bind-key "$key" run-shell "$CURRENT_DIR/scripts/restore.sh"
 	done
+	tmux set-option -as command-alias "resurect-restore=run-shell '$CURRENT_DIR/scripts/restore.sh'"
 }
 
 set_default_strategies() {
