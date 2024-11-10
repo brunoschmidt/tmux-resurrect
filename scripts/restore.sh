@@ -246,7 +246,7 @@ detect_if_restoring_from_scratch() {
 	if never_ever_overwrite; then
 		return
 	fi
-	local total_number_of_panes="$(tmux list-panes -a | wc -l | sed 's/ //g')"
+	local total_number_of_panes="$(tmux list-panes -a | grep -cE "^${TMUX_SESSION_NAME}:" | sed 's/ //g')"
 	if [ "$total_number_of_panes" -eq 1 ]; then
 		restore_from_scratch_true
 	fi
